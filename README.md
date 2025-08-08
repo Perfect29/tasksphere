@@ -17,17 +17,17 @@ Real-time updates via WebSocket.
 **Infrastructure:** Docker Compose, GitHub Actions 
 
 ## Run with Docker
-docker-compose up --build
-Frontend: http://localhost:5173
-Backend API: http://localhost:3000
-Run locally
+- docker-compose up --build
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:3000
+- Run locally
 
 ## Backend
-cd backend
-npm install
-npx prisma generate
-npx prisma migrate dev
-npm run start:dev
+- cd backend
+- npm install
+- npx prisma generate
+- npx prisma migrate dev
+- npm run start:dev
 
 ## Frontend
 cd ..
@@ -37,8 +37,8 @@ Environment Variables
 See .env.example in both frontend and backend folders.
 
 ## API Overview
-/auth — authentication
-/boards — boards management
-/columns — columns management
-/cards — cards management
-/upload — file uploads
+- /auth — authentication
+- /boards — boards management
+- /columns — columns management
+- /cards — cards management
+- /upload — file uploads
