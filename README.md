@@ -17,7 +17,6 @@ Real-time updates via WebSocket.
 **Infrastructure:** Docker Compose, GitHub Actions 
 
 ## Run with Docker
-```bash
 docker-compose up --build
 Frontend: http://localhost:5173
 Backend API: http://localhost:3000
@@ -29,7 +28,7 @@ npx prisma generate
 npx prisma migrate dev
 npm run start:dev
 
-# Frontend
+## Frontend
 cd ..
 npm install
 npm run dev
