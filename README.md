@@ -21,6 +21,7 @@ docker-compose up --build
 Frontend: http://localhost:5173
 Backend API: http://localhost:3000
 Run locally
+
 ## Backend
 cd backend
 npm install
@@ -34,7 +35,8 @@ npm install
 npm run dev
 Environment Variables
 See .env.example in both frontend and backend folders.
-API Overview
+
+## API Overview
 /auth — authentication
 /boards — boards management
 /columns — columns management
