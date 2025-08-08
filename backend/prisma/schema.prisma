@@ -1,0 +1,104 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  boards      Board[]
+  cards       Card[]
+  boardMembers BoardMember[]
+
+  @@map("users")
+}
+
+model Board {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  ownerId     String
+
+  // Relations
+  owner   User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  members BoardMember[]
+  columns Column[]
+
+  @@map("boards")
+}
+
+model BoardMember {
+  id      String @id @default(cuid())
+  boardId String
+  userId  String
+  role    String @default("member") // owner, admin, member
+
+  // Relations
+  board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([boardId, userId])
+  @@map("board_members")
+}
+
+model Column {
+  id       String @id @default(cuid())
+  title    String
+  position Int
+  boardId  String
+
+  // Relations
+  board Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  cards Card[]
+
+  @@map("columns")
+}
+
+model Card {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  position    Int
+  columnId    String
+  assignedTo  String?
+  dueDate     DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  column     Column       @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  assignee   User?        @relation(fields: [assignedTo], references: [id])
+  attachments Attachment[]
+
+  @@map("cards")
+}
+
+model Attachment {
+  id       String @id @default(cuid())
+  filename String
+  url      String
+  size     Int
+  mimeType String
+  cardId   String
+
+  // Relations
+  card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@map("attachments")
+}

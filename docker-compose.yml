@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: tasksphere-db
+    environment:
+      POSTGRES_DB: tasksphere
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - tasksphere-network
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: tasksphere-backend
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/tasksphere
+      JWT_SECRET: tasksphere-jwt-secret-key-2024
+      FRONTEND_URL: http://localhost:5173
+      NODE_ENV: development
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - tasksphere-network
+    command: sh -c "npx prisma migrate deploy && npm run start:dev"
+
+  # Frontend (Development)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: tasksphere-frontend
+    environment:
+      VITE_API_URL: http://localhost:3000
+      VITE_WS_URL: ws://localhost:3000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - tasksphere-network
+
+volumes:
+  postgres_data:
+
+networks:
+  tasksphere-network:
+    driver: bridge

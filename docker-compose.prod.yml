@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: tasksphere-db-prod
+    environment:
+      POSTGRES_DB: tasksphere
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+    networks:
+      - tasksphere-network
+    restart: unless-stopped
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: tasksphere-backend-prod
+    environment:
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/tasksphere
+      JWT_SECRET: ${JWT_SECRET}
+      FRONTEND_URL: ${FRONTEND_URL}
+      NODE_ENV: production
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    networks:
+      - tasksphere-network
+    restart: unless-stopped
+    command: sh -c "npx prisma migrate deploy && npm run start:prod"
+
+  # Frontend (Production Build)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend.prod
+    container_name: tasksphere-frontend-prod
+    environment:
+      VITE_API_URL: ${VITE_API_URL}
+      VITE_WS_URL: ${VITE_WS_URL}
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - tasksphere-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data_prod:
+
+networks:
+  tasksphere-network:
+    driver: bridge
