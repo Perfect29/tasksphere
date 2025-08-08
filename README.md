@@ -20,21 +20,6 @@ Real-time updates via WebSocket.
 - docker-compose up --build
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:3000
-- Run locally
-
-## Backend
-- cd backend
-- npm install
-- npx prisma generate
-- npx prisma migrate dev
-- npm run start:dev
-
-## Frontend
-cd ..
-npm install
-npm run dev
-Environment Variables
-See .env.example in both frontend and backend folders.
 
 ## API Overview
 - /auth — authentication
