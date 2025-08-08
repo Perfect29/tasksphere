@@ -21,7 +21,7 @@ docker-compose up --build
 Frontend: http://localhost:5173
 Backend API: http://localhost:3000
 Run locally
-# Backend
+## Backend
 cd backend
 npm install
 npx prisma generate
